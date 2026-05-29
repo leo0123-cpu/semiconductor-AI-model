@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>차세대 전력 반도체 밴드갭 예측기</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <header class="site-header">
+      <nav class="topbar" aria-label="주요 이동">
+        <a class="brand" href="#predictor">Bandgap AI</a>
+        <div class="nav-links">
+          <a href="#method">방법</a>
+          <a href="#candidates">후보</a>
+          <a href="#dataset">데이터</a>
+        </div>
+      </nav>
+
+      <section class="hero" id="predictor">
+        <div class="hero-copy">
+          <p class="eyebrow">Semiconductor Screening Demo</p>
+          <h1>차세대 전력 반도체 밴드갭 예측기</h1>
+          <p class="hero-text">
+            화학식을 입력하면 원소 특성 기반 피처를 계산하고, 기존 밴드갭 데이터와의
+            유사도를 이용해 전력 반도체 후보 가능성을 빠르게 추정합니다.
+          </p>
+          <div class="hero-stats" aria-label="데모 요약">
+            <span><strong id="material-count">0</strong> 학습 물질</span>
+            <span><strong id="element-count">0</strong> 원소 DB</span>
+            <span><strong>정적</strong> GitHub Pages</span>
+          </div>
+        </div>
+
+        <form class="predictor-panel" id="predict-form">
+          <label for="formula-input">예측할 화학식</label>
+          <div class="input-row">
+            <input id="formula-input" name="formula" type="text" autocomplete="off"
+              placeholder="GaN SiC Ga₂O₃ AlN ZnO">
+            <button type="submit">예측하기</button>
+          </div>
+          <p class="input-help">공백 또는 쉼표로 여러 개를 입력할 수 있습니다. 빈 입력은 기본 후보를 사용합니다.</p>
+          <div class="quick-buttons" aria-label="빠른 입력">
+            <button type="button" data-example="GaN SiC Ga2O3 AlN ZnO">대표 후보</button>
+            <button type="button" data-example="BaTiO3 SrTiO3 KTaO3 NaTaO3">페로브스카이트</button>
+            <button type="button" data-example="HfO2 ZrO2 Ta2O5 Nb2O5">산화물</button>
+          </div>
+          <p class="demo-note">브라우저용 근사 예측 데모입니다. 원본 Python ML 모델과 값이 완전히 같지는 않습니다.</p>
+        </form>
+      </section>
+    </header>
+
+    <main>
+      <section class="section results-section" aria-live="polite">
+        <div class="section-heading">
+          <p class="eyebrow">Prediction Results</p>
+          <h2>예측 결과</h2>
+        </div>
+        <div class="error-box" id="error-box" hidden></div>
+        <div class="results-grid" id="results-grid"></div>
+      </section>
+
+      <section class="section insight-band" id="method">
+        <div class="section-heading">
+          <p class="eyebrow">Research Logic</p>
+          <h2>분석 방법</h2>
+        </div>
+        <div class="method-grid">
+          <article>
+            <span class="step">01</span>
+            <h3>화학식 파싱</h3>
+            <p>아래첨자를 일반 숫자로 바꾸고 원소 기호와 조성비를 읽어 원자 분율을 계산합니다.</p>
+          </article>
+          <article>
+            <span class="step">02</span>
+            <h3>피처 변환</h3>
+            <p>전기음성도, 원자 반지름, 원자가전자, 이온화 에너지, 계열 플래그 등을 수치화합니다.</p>
+          </article>
+          <article>
+            <span class="step">03</span>
+            <h3>유사도 예측</h3>
+            <p>기존 물질과의 피처 거리를 계산하고 가까운 5개 물질의 밴드갭을 가중 평균합니다.</p>
+          </article>
+          <article>
+            <span class="step">04</span>
+            <h3>후보 판정</h3>
+            <p>예측 밴드갭과 데이터 거리 기반 불확실성을 반영해 전력 반도체 적합도 점수를 산정합니다.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section chart-section">
+        <div class="section-heading">
+          <p class="eyebrow">Chemical Space</p>
+          <h2>밴드갭 데이터 분포</h2>
+        </div>
+        <div class="chart-layout">
+          <canvas id="bandgap-chart" width="920" height="420" aria-label="밴드갭 분포 차트"></canvas>
+          <div class="chart-notes">
+            <h3>시각화 기준</h3>
+            <p>가로축은 원자번호 평균, 세로축은 전기음성도 평균입니다. 점 색상은 밴드갭 크기를 나타냅니다.</p>
+            <ul>
+              <li>넓은 밴드갭 후보는 전력 반도체 검토에 유리합니다.</li>
+              <li>기존 데이터에서 멀수록 신뢰도는 낮아질 수 있습니다.</li>
+              <li>이 차트는 웹 데모용 해석 보조 자료입니다.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="candidates">
+        <div class="section-heading">
+          <p class="eyebrow">Screening</p>
+          <h2>대표 후보 TOP 리스트</h2>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>순위</th>
+                <th>화학식</th>
+                <th>예측 밴드갭</th>
+                <th>점수</th>
+                <th>신뢰도</th>
+                <th>판정</th>
+              </tr>
+            </thead>
+            <tbody id="candidate-table"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="section dataset-section" id="dataset">
+        <div class="section-heading">
+          <p class="eyebrow">Dataset</p>
+          <h2>내장 밴드갭 데이터</h2>
+        </div>
+        <div class="dataset-tools">
+          <input id="dataset-search" type="search" placeholder="물질 검색: GaN, SiC, ZnO">
+          <span id="dataset-count"></span>
+        </div>
+        <div class="table-wrap compact">
+          <table>
+            <thead>
+              <tr>
+                <th>화학식</th>
+                <th>밴드갭(eV)</th>
+                <th>계열</th>
+              </tr>
+            </thead>
+            <tbody id="dataset-table"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>원본 Python 연구 코드를 GitHub Pages용 정적 웹 데모로 변환한 버전입니다.</p>
+    </footer>
+
+    <script src="app.js"></script>
+  </body>
+</html>
