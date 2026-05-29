@@ -1,52 +1,27 @@
-# semiconductor-AI-model
-# AI-Based Band Gap Predictor for Semiconductor Materials
+# 차세대 전력 반도체 밴드갭 예측기
 
-머신러닝을 활용하여 반도체 소재의 밴드갭 에너지를 예측하는 프로그램입니다.
+`전체 버전.txt`의 Python 연구 코드를 GitHub Pages에서 바로 열 수 있는 정적 웹사이트로 옮긴 데모입니다.
 
-## 프로젝트 소개
+## 파일 구성
 
-이 프로젝트는 화학식과 원소의 물성 데이터를 바탕으로 반도체 후보 물질의 밴드갭 에너지를 예측합니다.  
-밴드갭은 반도체의 전기적·광학적 특성을 결정하는 중요한 값으로, 전력반도체, LED, 태양전지, 포토다이오드 등 다양한 반도체 소자와 관련됩니다.
+- `index.html`: 웹사이트 화면 구조
+- `styles.css`: 반응형 디자인과 결과 카드 스타일
+- `app.js`: 화학식 파싱, 피처 계산, 밴드갭 근사 예측 로직
+- `README.md`: 배포 안내
 
-## 주요 기능
+## 실행 방법
 
-- 화학식 기반 원소 특징 추출
-- 밴드갭 에너지 예측
-- 머신러닝 회귀 모델 비교
-- 반도체 후보 소재의 활용 가능성 판단
+로컬에서는 `index.html` 파일을 브라우저로 열면 됩니다. 별도 서버, 패키지 설치, 빌드 과정이 필요 없습니다.
 
-## 사용 모델
+## GitHub Pages 배포
 
-- Ridge Regression
-- Random Forest Regressor
-- Gradient Boosting Regressor
+1. GitHub에서 새 저장소를 만듭니다.
+2. `index.html`, `styles.css`, `app.js`, `README.md`를 저장소 루트에 업로드합니다.
+3. 저장소의 `Settings`로 이동합니다.
+4. `Pages` 메뉴에서 `Deploy from a branch`를 선택합니다.
+5. Branch는 `main`, 폴더는 `/root`를 선택하고 저장합니다.
+6. 잠시 후 표시되는 GitHub Pages 주소로 접속합니다.
 
-## 사용 기술
+## 참고
 
-- Python
-- scikit-learn
-- pandas
-- numpy
-- matplotlib
-
-## 반도체와의 관련성
-
-본 프로그램은 반도체 칩을 직접 설계하거나 제조하는 프로그램은 아닙니다.  
-대신 반도체 소재의 핵심 물성인 밴드갭 에너지를 예측하여, 어떤 물질이 반도체 소재로 적합한지 판단하는 데 도움을 주는 AI 기반 소재 탐색 프로그램입니다.
-
-## 기존 방식과의 차이점
-
-기존에는 반도체 소재의 밴드갭을 확인하기 위해 실험 측정이나 DFT 계산이 필요했습니다.  
-하지만 실험과 정밀 계산은 시간과 비용이 많이 들 수 있습니다.  
-본 프로젝트는 머신러닝을 활용하여 정밀 계산이나 실험 전에 후보 물질의 밴드갭을 빠르게 예측하는 1차 선별 도구를 목표로 합니다.
-
-## 한계점
-
-- 실제 연구 수준의 대규모 데이터셋보다 정확도는 낮을 수 있습니다.
-- 결정 구조, 온도, 실험 조건 등은 모두 반영하지 못합니다.
-- 예측값은 최종 판단이 아니라 후보 물질 선별을 위한 참고값입니다.
-
-## 참고 선행연구
-
-- Feature-Assisted Machine Learning for Predicting Band Gaps of Binary Semiconductors
-- Prediction of Experimental Bandgap via Machine Learning with Transfer Learning Techniques
+이 웹 버전은 브라우저용 근사 예측 데모입니다. 원본 Python 코드의 scikit-learn, XGBoost, LightGBM 모델을 그대로 실행하지 않고, 내장 데이터와 피처 거리 기반 가중 평균으로 밴드갭을 추정합니다.
